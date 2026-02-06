@@ -30,65 +30,94 @@ const TodoForm = ({ onAdd }: TodoFormProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<Status>("not-started");
-  const [error, setError] = useState<string | null>(null);
+
+  // Lagrar fel vid fälten
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+  }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    await todoSchema.validate(
-      { title, description, status },
-      { abortEarly: false }
-    );
+    try {
+      await todoSchema.validate(
+        { title, description, status },
+        { abortEarly: false }
+      );
 
-    setError(null);
+      setErrors({});
 
-    onAdd({
-      title,
-      description,
-      status
-    });
+      onAdd({
+        title,
+        description,
+        status
+      });
 
-    setTitle("");
-    setDescription("");
-    setStatus("not-started");
+      setTitle("");
+      setDescription("");
+      setStatus("not-started");
 
-  } catch (err) {
-    if (err instanceof yup.ValidationError) {
-      setError(err.errors[0]); // visar första felet
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        const newErrors: { title?: string; description?: string } = {};
+
+        err.inner.forEach((error) => {
+          if (error.path) {
+            newErrors[error.path as "title" | "description"] = error.message;
+          }
+        });
+
+        setErrors(newErrors);
+      }
     }
-  }
-};
+  };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2>Lägg till Todo</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <div>
+        <input
+          type="text"
+          placeholder="Titel"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {errors.title && (
+          <p style={{ color: "red", margin: "4px 0" }}>
+            {errors.title}
+          </p>
+        )}
+      </div>
 
-      <input
-        type="text"
-        placeholder="Titel"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <div>
+        <textarea
+          placeholder="Beskrivning (valfri)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        {errors.description && (
+          <p style={{ color: "red", margin: "4px 0" }}>
+            {errors.description}
+          </p>
+        )}
+      </div>
 
-      <textarea
-        placeholder="Beskrivning (valfri)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+      <div>
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value as Status)}
+        >
+          <option value="not-started">Ej påbörjad</option>
+          <option value="in-progress">Pågående</option>
+          <option value="done">Avklarad</option>
+        </select>
+      </div>
 
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value as Status)}
-      >
-        <option value="not-started">Ej påbörjad</option>
-        <option value="in-progress">Pågående</option>
-        <option value="done">Avklarad</option>
-      </select>
-
-      <button className="submit" type="submit">Lägg till</button>
+      <button className="submit" type="submit">
+        Lägg till
+      </button>
     </form>
   );
 };
