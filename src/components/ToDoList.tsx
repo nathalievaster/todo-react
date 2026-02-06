@@ -14,7 +14,7 @@ const TodoList = ({ todos, onDelete, onUpdateStatus }: TodoListProps) => {
 
   return (
     <div>
-      <h2>Mina Todos</h2>
+      <h2 style ={{ textAlign: "center"}}>Mina Todos</h2>
       {todos.map((todo) => (
         <TodoItem
           key={todo.id}

@@ -88,7 +88,7 @@ const TodoForm = ({ onAdd }: TodoFormProps) => {
         <option value="done">Avklarad</option>
       </select>
 
-      <button type="submit">Lägg till</button>
+      <button className="submit" type="submit">Lägg till</button>
     </form>
   );
 };

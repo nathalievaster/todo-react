@@ -8,11 +8,11 @@ interface TodoItemProps {
 
 const TodoItem = ({ todo, onDelete, onUpdateStatus }: TodoItemProps) => {
   return (
-    <div style={{ border: "1px solid gray", padding: "10px", marginBottom: "10px" }}>
-      <h3>{todo.title}</h3>
-      {todo.description && <p>{todo.description}</p>}
+    <div style={{ border: "1px solid gray", padding: "2em", margin: "2em", borderRadius: "20px" }}>
+      <h3 style={{ padding: "1em"}}>{todo.title}</h3>
+      {todo.description && <p style={{ padding: "1em"}}>{todo.description}</p>}
 
-      <p>Status: {todo.status}</p>
+      <p style={{ padding: "1em"}}>Status: {todo.status}</p>
 
       <select
         value={todo.status}
@@ -25,7 +25,7 @@ const TodoItem = ({ todo, onDelete, onUpdateStatus }: TodoItemProps) => {
         <option value="done">Avklarad</option>
       </select>
 
-      <button onClick={() => onDelete(todo.id)}>Ta bort</button>
+      <button className="delete" onClick={() => onDelete(todo.id)}>Ta bort</button>
     </div>
   );
 };
